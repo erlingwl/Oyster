@@ -1,0 +1,71 @@
+<project name="Oyster" default="cucumber" basedir=".">
+  <property name="jruby.home" value="${basedir}/lib/.jruby"/>
+  <property file="build.properties" />
+  <property name="testconfig" value="config/test/oyster.properties"/>
+  <property name="productionconfig" value="config/production/oyster.properties"/>
+
+  <target name="cucumber" depends="-define-paths, test" description="Run Cucumber">
+    <taskdef name="cucumber" classname="cuke4duke.ant.CucumberTask" classpathref="compile.classpath" />
+    <cucumber args="--color --format pretty" objectFactory="pico">
+      <classpath>
+        <pathelement location="lib"/>
+        <pathelement location="src"/>
+        <pathelement location="config"/>
+      </classpath>
+    </cucumber>
+  </target>
+
+  <target name="test" depends="-define-paths" description="Run Unit Tests">
+       <java classname="clojure.main" fork="true" failonerror="true">
+           <classpath>
+               <fileset dir="lib" includes="**/*.jar"/>
+               <pathelement location="src"/>
+               <pathelement location="tests"/>
+               <pathelement location="config"/>
+           </classpath>
+           <sysproperty key="oyster.config" value="${testconfig}"/>
+           <arg value="-e" />
+            <arg value="
+                       (use 'clojure.test)
+                       (use 'oyster_tests)
+                       (runtests)
+                       " />
+       </java>
+  </target>
+
+  <target name="integration-test" depends="-define-paths" description="Run Integration Tests">
+       <java classname="clojure.main" fork="true" failonerror="true">
+           <classpath>
+               <fileset dir="lib" includes="**/*.jar"/>
+               <pathelement location="src"/>
+               <pathelement location="integration-tests"/>
+               <pathelement location="config"/>
+           </classpath>
+           <sysproperty key="oyster.config" value="${productionconfig}"/>
+           <arg value="-e" />
+            <arg value="
+                        (use 'oyster_integration)
+                        "/>
+       </java>
+  </target>
+
+  <target name="install-gems" depends="-define-paths" if="gems">
+    <taskdef name="gem" classname="cuke4duke.ant.GemTask" classpathref="compile.classpath"/>
+    <gem args="install cuke4duke --version 0.2.3 --source http://gemcutter.org/"/>
+  </target>
+
+  <target name="-define-paths">
+    <path id="jruby.classpath">
+      <fileset dir="lib">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+
+    <path id="compile.classpath">
+      <fileset dir="lib">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+</project>

@@ -1,0 +1,13 @@
+clojure-contrib.jar - CPL/EPL - see http://github.com/richhickey/clojure-contrib
+clojure.jar - EPL - see http://clojure.org/
+clj-apache-http.jar - unspecified - see http://github.com/rnewman/clj-apache-http
+
+cuke4duke.jar - MIT - see http://wiki.github.com/aslakhellesoy/cuke4duke/
+
+picocontainer-2.8.3 - BSD - see http://www.picocontainer.org/
+
+jruby-complete-1.4.0.jar - CPL - see http://github.com/jruby/jruby
+
+
+commons-codec-1.3.jar, commons-logging-1.1.1.jar, httpclient-4.0.1.jar, httpcore-4.0.1.jar,
+httpcore-nio-4.0.1.jar and httpmime-4.0.1.jar all under Apache 2.0 license.

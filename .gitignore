@@ -1,0 +1,4 @@
+config/production/*
+target/*
+lib/.jruby/**/*
+out/*
