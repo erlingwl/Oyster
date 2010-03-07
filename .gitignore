@@ -3,4 +3,4 @@ target/*
 lib/.jruby/**/*
 out/*
 *.iml
-.idea/**/*
+.idea/*
