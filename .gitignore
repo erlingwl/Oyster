@@ -2,3 +2,5 @@ config/production/*
 target/*
 lib/.jruby/**/*
 out/*
+*.iml
+.idea/**/*
