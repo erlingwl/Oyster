@@ -49,7 +49,7 @@
        </java>
   </target>
 
-  <target name="install-gems" depends="-define-paths" if="gems">
+  <target name="install-gems" depends="-define-paths" description="Install gems needed for cucumber">
     <taskdef name="gem" classname="cuke4duke.ant.GemTask" classpathref="compile.classpath"/>
     <gem args="install cuke4duke --version 0.2.3 --source http://gemcutter.org/"/>
   </target>
