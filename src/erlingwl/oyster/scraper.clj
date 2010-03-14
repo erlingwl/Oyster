@@ -36,17 +36,25 @@
   )
 
 (defn parse-hidden-input [logged-in-page]
-  (let [match (re-find #"<input type=\"hidden\" name=\"(.+)\" value=\"(.*)\"/>" logged-in-page)]
+  (let [match (re-find #"<input type=\"hidden\" name=\"(.+)\" value=\"(.+)\"/?>" logged-in-page)]
     {:key (nth match 1) :value (nth match 2)}
     )
   )
 
+(defn create-query-params [hidden-key-pair card-id]
+  (assoc {:cardId card-id :method "input"} (:key hidden-key-pair) (:value hidden-key-pair)) 
+  )
+
 (defn choose-card [card-id hidden-key-pair]
-  (http/post (str domain "/oyster/selectCard.do")
-    :parameter ({:Content-Type "application/x-www-form-urlencoded"} :parammap)
-    :query {:cardId card-id :method "input" (:key hidden-key-pair) (:value hidden-key-pair)}
-    :as :string
-    :headers-as :map
+  (println card-id hidden-key-pair)
+  (let [query-params (create-query-params hidden-key-pair card-id)]
+    (println query-params)
+    (http/post (str domain "/oyster/selectCard.do")
+      :parameter ({:Content-Type "application/x-www-form-urlencoded"} :parammap)
+      :query query-params
+      :as :string
+      :headers-as :map
+    )
   )
 )
 
@@ -54,6 +62,7 @@
   (let [card-no (parse-first-card-no logged-in-page) hidden-key-pair (parse-hidden-input logged-in-page)]
     (if (not (nil? card-no))
       (let [content (:content (choose-card card-no hidden-key-pair))]
+        (println content)
         content
         )
       logged-in-page

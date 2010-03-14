@@ -358,7 +358,7 @@
                             <option value=\"12345\">12345</option>
                             <option value=\"6789\">6789</option></select>
                           <input type=\"submit\" class=\"oysterbutton\" value=\"Go\"/>
-                          <input type=\"hidden\" name=\"123456789\" value=\"9-5-1234E\"/>
+                          <input type=\"hidden\" name=\"1173511920\" value=\"24-4-6375FCE6C08010C5E54FABA04C074E29\">
                       </form>")
 
 (def test-printer-friendly-url "<p><a href=\"/printer-friendly\" target=\"_new\">Printer friendly version</a></p>")

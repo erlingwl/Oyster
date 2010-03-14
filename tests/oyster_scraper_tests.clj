@@ -27,8 +27,16 @@
   )
 
 (deftest should-parse-hidden-input
-  (is (= (parse-hidden-input select-card-form) {:key "123456789" :value "9-5-1234E"}))
+  (is (= (parse-hidden-input select-card-form) {:key "1173511920" :value "24-4-6375FCE6C08010C5E54FABA04C074E29"}))
   )
+
+(deftest should-create-query-params
+  (let [query-params-map (create-query-params {:key "1234" :value "4567"} "8978")]
+    (is (= (get query-params-map :cardId) "8978"))
+    (is (= (get query-params-map :method) "input"))
+    (is (= (get query-params-map "1234") "4567"))
+    )
+)
 
 (deftest should-return-original-logged-in-page-for-first-card-if-no-cards-to-select
   (let [original-logged-in-page "original"]
