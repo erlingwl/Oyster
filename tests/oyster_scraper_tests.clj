@@ -48,7 +48,7 @@
   (let [original-logged-in-page "original"]
     (expect [parse-first-card-no (returns nil)]
       (expect [parse-hidden-input (returns nil)]
-        (is (= original-logged-in-page (logged-in-page-for-first-card original-logged-in-page)))
+        (is (= original-logged-in-page (logged-in-page-for-first-card original-logged-in-page "JSESSIONID=1234")))
     ))
   )
 )
@@ -58,7 +58,7 @@
     (expect [parse-first-card-no (returns "1234")]
       (expect [parse-hidden-input (returns {:key "123" :value "345"})]
         (expect [choose-card (returns {:content first-card-logged-in-page})]
-          (is (= first-card-logged-in-page (logged-in-page-for-first-card "original-logged-in-page")))
+          (is (= first-card-logged-in-page (logged-in-page-for-first-card "original-logged-in-page" "JSESSIONID=1234")))
         )
       )
     )
@@ -66,9 +66,11 @@
 )
 
 (deftest test-printer-friendly-page
-  (expect [getpage (returns {:content "Mocked page"})]
-    (expect [printer-friendly-url (returns "http://irrelevant/url")]
-      (is (= (printer-friendly-page) "Mocked page"))
+  (expect [login-headers (returns {"Location" ["http://location"] "Set-Cookie" ["JSESSIONID=12345A.portal2; Path=/; Secure"]})]
+    (expect [get-page-for-jsessionid (returns {:content "Mocked page"})]
+      (expect [printer-friendly-url (returns "http://irrelevant/url")]
+        (is (= (printer-friendly-page) "Mocked page"))
+      )
     )
   )
 )
@@ -78,12 +80,12 @@
 )
 
 (deftest should-return-printer-friendly-url
-  (expect [login-headers (returns {"Location" ["http://location"] "Set-Cookie" ["JSESSIONID=12345A.portal2; Path=/; Secure"]})]
+  (let [login-headers {"Location" ["http://location"] "Set-Cookie" ["JSESSIONID=12345A.portal2; Path=/; Secure"]}]
     (expect [logged-in-page-for-first-card (returns nil)]
-      (expect [getpage (returns {:content test-printer-friendly-url})]
+      (expect [get-page-for-jsessionid (returns {:content test-printer-friendly-url})]
         (expect [login-location (returns nil)]
           (expect [journey-history-url (returns "http://journey-history")]
-              (is (= (printer-friendly-url) (str domain "/printer-friendly")))
+              (is (= (printer-friendly-url login-headers) (str domain "/printer-friendly")))
           )
         )
       )

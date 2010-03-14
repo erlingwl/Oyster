@@ -28,6 +28,7 @@
             <arg value="
                        (use 'clojure.test)
                        (use 'oyster_tests)
+                       (use 'oyster_scraper_tests)
                        (runtests)
                        " />
        </java>

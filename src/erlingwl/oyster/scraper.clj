@@ -31,8 +31,6 @@
   )
 )
 
-(defn getpage [url] (http/get url :as :string))
-
 (defn journey-history-url [logged-in-page]
   (str domain
   (nth (re-find #"<a href=\"(.*)\">Journey.*history</a>" logged-in-page) 1)
@@ -86,17 +84,17 @@
 (defn printer-friendly-url [login-headers-map]
     (let [jsessionid (parse-jsession-id login-headers-map)]
         (str domain
-            (let [logged-in-page (logged-in-page-for-first-card (:content (getpage (login-location login-headers-map))) jsessionid)]
+            (let [logged-in-page (logged-in-page-for-first-card (:content (get-page-for-jsessionid (login-location login-headers-map) jsessionid)) jsessionid)]
                 (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
                     (let [journey-history-page (:content (get-page-for-jsessionid go-to-journey-history-page-url jsessionid))]
                         (let [parsed-printer-friendly-url (parse-printer-friendly-url journey-history-page)]
                             parsed-printer-friendly-url
-                            )
                         )
                     )
                 )
             )
         )
+    )
 )
 
 (defn printer-friendly-page []
