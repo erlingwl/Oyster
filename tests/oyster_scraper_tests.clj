@@ -1,4 +1,4 @@
-(ns oyster_tests
+(ns oyster_scraper_tests
   (:import
     (java.lang Exception)
     (java.util Properties)
@@ -104,4 +104,3 @@
   )
 
 (clojure.test/run-tests)
-(defn runtests [] (clojure.test/run-tests))
