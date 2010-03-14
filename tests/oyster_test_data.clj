@@ -360,3 +360,5 @@
                           <input type=\"submit\" class=\"oysterbutton\" value=\"Go\"/>
                           <input type=\"hidden\" name=\"123456789\" value=\"9-5-1234E\"/>
                       </form>")
+
+(def test-printer-friendly-url "<p><a href=\"/printer-friendly\" target=\"_new\">Printer friendly version</a></p>")

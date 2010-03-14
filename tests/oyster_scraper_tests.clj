@@ -59,5 +59,21 @@
   )
 )
 
+(deftest should-parse-printer-friendly-url
+  (is (= (parse-printer-friendly-url test-printer-friendly-url) "/printer-friendly"))
+)
+
+(deftest should-return-printer-friendly-url
+  (expect [logged-in-page-for-first-card (returns nil)]
+    (expect [getpage (returns {:content test-printer-friendly-url})]
+      (expect [login-location (returns nil)]
+        (expect [journey-history-url (returns "http://journey-history")]
+            (is (= (printer-friendly-url) (str domain "/printer-friendly")))
+        )
+      )
+    )
+  )
+)
+
 (clojure.test/run-tests)
 (defn runtests [] (clojure.test/run-tests))

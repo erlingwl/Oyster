@@ -22,7 +22,7 @@
 )
 
 (defn- login-headers [] (:headers (login)))
-(defn- login-location [] (first (get (login-headers) "Location")))
+(defn login-location [] (first (get (login-headers) "Location")))
 
 (defn getpage [url] (http/get url :as :string))
 
@@ -51,7 +51,6 @@
 )
 
 (defn logged-in-page-for-first-card [logged-in-page]
-  (println logged-in-page)
   (let [card-no (parse-first-card-no logged-in-page) hidden-key-pair (parse-hidden-input logged-in-page)]
     (if (not (nil? card-no))
       (let [content (:content (choose-card card-no hidden-key-pair))]
@@ -62,19 +61,20 @@
     )
 )
 
-(defn printer-friendly-url [] (
-  (str domain
-  (let [logged-in-page (logged-in-page-for-first-card (:content (getpage (login-location))))]
+(defn parse-printer-friendly-url [page]
   (nth
-    (re-find #"<p><a href=\"(.*)\".*target=\"_new\".*>Printer friendly version</a></p>"
-      (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
-        (let [journey-history-page (:content (getpage go-to-journey-history-page-url))]
-        journey-history-page)
-        )
-    )
+    (re-find #"<a href=\"(.*)\".*target=\".*\".*>Printer friendly version</a>" page)
   1)
-    )
-  )
-))
+)
+
+(defn printer-friendly-url []
+  (str domain
+    (let [logged-in-page (logged-in-page-for-first-card (:content (getpage (login-location))))]
+        (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
+          (let [journey-history-page (:content (getpage go-to-journey-history-page-url))]
+            (parse-printer-friendly-url journey-history-page)
+          )
+        )
+)))
 
 (defn printer-friendly-page [](:content (getpage (printer-friendly-url))))
