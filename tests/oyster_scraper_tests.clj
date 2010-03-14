@@ -30,7 +30,26 @@
   (is (= (parse-hidden-input select-card-form) {:key "123456789" :value "9-5-1234E"}))
   )
 
-;(defn printer-friendly-page [](:content (getpage (printer-friendly-url))))
+(deftest should-return-original-logged-in-page-for-first-card-if-no-cards-to-select
+  (let [original-logged-in-page "original"]
+    (expect [parse-first-card-no (returns nil)]
+      (expect [parse-hidden-input (returns nil)]
+        (is (= original-logged-in-page (logged-in-page-for-first-card original-logged-in-page)))
+    ))
+  )
+)
+
+(deftest should-return-page-for-first-card-if-cards-to-select
+  (let [first-card-logged-in-page "first-card-logged-in"]
+    (expect [parse-first-card-no (returns "1234")]
+      (expect [parse-hidden-input (returns {:key "123" :value "345"})]
+        (expect [choose-card (returns {:content first-card-logged-in-page})]
+          (is (= first-card-logged-in-page (logged-in-page-for-first-card "original-logged-in-page")))
+        )
+      )
+    )
+  )
+)
 
 (deftest test-printer-friendly-page
   (expect [getpage (returns {:content "Mocked page"})]

@@ -358,5 +358,5 @@
                             <option value=\"12345\">12345</option>
                             <option value=\"6789\">6789</option></select>
                           <input type=\"submit\" class=\"oysterbutton\" value=\"Go\"/>
-                          <input type=\"hidden\" value=\"9-5-1234E\" name=\"123456789\"/>
+                          <input type=\"hidden\" name=\"123456789\" value=\"9-5-1234E\"/>
                       </form>")
