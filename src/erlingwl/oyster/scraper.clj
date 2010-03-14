@@ -21,8 +21,15 @@
   )
 )
 
-(defn- login-headers [] (:headers (login)))
-(defn login-location [] (first (get (login-headers) "Location")))
+(defn login-headers [] (:headers (login)))
+
+(defn login-location [login-headers-map] (first (get login-headers-map "Location")))
+
+(defn parse-jsession-id [headers-map]
+  (let [cookies (first (get headers-map "Set-Cookie"))]
+    (nth (re-find #"(JSESSIONID=\S*);" cookies) 1)   
+  )
+)
 
 (defn getpage [url] (http/get url :as :string))
 
@@ -49,23 +56,20 @@
   (assoc {:cardId card-id :method "input"} (:key hidden-key-pair) (:value hidden-key-pair))
   )
 
-(defn choose-card [card-id hidden-key-pair]
-  (println card-id hidden-key-pair)
+(defn get-page-for-jsessionid [url jsessionid]
+    (http/get url :headers {"Cookie" jsessionid} :as :string)
+)
+
+(defn choose-card [card-id hidden-key-pair jsessionid]
   (let [url (append-url-params "/oyster/selectCard.do" hidden-key-pair card-id)]
-    (println url)
-    (http/post url
-      :parameter ({:Content-Type "application/x-www-form-urlencoded"} :parammap)
-      :as :string
-      :headers-as :map
-    )
+    (get-page-for-jsessionid url jsessionid)
   )
 )
 
-(defn logged-in-page-for-first-card [logged-in-page]
+(defn logged-in-page-for-first-card [logged-in-page jsessionid]
   (let [card-no (parse-first-card-no logged-in-page) hidden-key-pair (parse-hidden-input logged-in-page)]
     (if (not (nil? card-no))
-      (let [content (:content (choose-card card-no hidden-key-pair))]
-        (println content)
+      (let [content (:content (choose-card card-no hidden-key-pair jsessionid))]
         content
         )
       logged-in-page
@@ -79,14 +83,26 @@
   1)
 )
 
-(defn printer-friendly-url []
-  (str domain
-    (let [logged-in-page (logged-in-page-for-first-card (:content (getpage (login-location))))]
-        (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
-          (let [journey-history-page (:content (getpage go-to-journey-history-page-url))]
-            (parse-printer-friendly-url journey-history-page)
-          )
+(defn printer-friendly-url [login-headers-map]
+    (let [jsessionid (parse-jsession-id login-headers-map)]
+        (str domain
+            (let [logged-in-page (logged-in-page-for-first-card (:content (getpage (login-location login-headers-map))) jsessionid)]
+                (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
+                    (let [journey-history-page (:content (get-page-for-jsessionid go-to-journey-history-page-url jsessionid))]
+                        (let [parsed-printer-friendly-url (parse-printer-friendly-url journey-history-page)]
+                            parsed-printer-friendly-url
+                            )
+                        )
+                    )
+                )
+            )
         )
-)))
+)
 
-(defn printer-friendly-page [](:content (getpage (printer-friendly-url))))
+(defn printer-friendly-page []
+  (let [login-headers-map (login-headers)]
+    (let [jsessionid (parse-jsession-id login-headers-map)]
+      (:content (get-page-for-jsessionid (printer-friendly-url login-headers-map) jsessionid))
+    )
+  )
+)

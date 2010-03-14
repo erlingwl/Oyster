@@ -78,16 +78,28 @@
 )
 
 (deftest should-return-printer-friendly-url
-  (expect [logged-in-page-for-first-card (returns nil)]
-    (expect [getpage (returns {:content test-printer-friendly-url})]
-      (expect [login-location (returns nil)]
-        (expect [journey-history-url (returns "http://journey-history")]
-            (is (= (printer-friendly-url) (str domain "/printer-friendly")))
+  (expect [login-headers (returns {"Location" ["http://location"] "Set-Cookie" ["JSESSIONID=12345A.portal2; Path=/; Secure"]})]
+    (expect [logged-in-page-for-first-card (returns nil)]
+      (expect [getpage (returns {:content test-printer-friendly-url})]
+        (expect [login-location (returns nil)]
+          (expect [journey-history-url (returns "http://journey-history")]
+              (is (= (printer-friendly-url) (str domain "/printer-friendly")))
+          )
         )
       )
     )
   )
 )
+
+(deftest return-login-location
+  (let [login-headers {"Location" ["http://location"]}]
+    (is (= (login-location login-headers) "http://location"))
+  )
+)
+
+(deftest should-parse-jsessionid-from-cookie
+  (is (= (parse-jsession-id {"Set-Cookie" ["JSESSIONID=12345A.portal2; Path=/; Secure"]}) "JSESSIONID=12345A.portal2"))
+  )
 
 (clojure.test/run-tests)
 (defn runtests [] (clojure.test/run-tests))
