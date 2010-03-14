@@ -40,6 +40,15 @@
   (nth (re-find #"<option\s*value=\"(\d+)\"\s*>" logged-in-page) 1)
   )
 
+(defn get-list-of-card-ids [logged-in-page]
+  (loop [matches (re-seq #"<option\s*value=\"(\d+)\"\s*>" logged-in-page) group1 []]
+    (if (empty? matches)
+      group1
+      (recur (rest matches) (conj group1 (nth (first matches) 1)))
+    )
+  )
+)
+
 (defn parse-hidden-input [logged-in-page]
   (let [match (re-find #"<input type=\"hidden\" name=\"(.+)\" value=\"(.+)\"/?>" logged-in-page)]
     {:key (nth match 1) :value (nth match 2)}

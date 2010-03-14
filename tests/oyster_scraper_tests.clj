@@ -103,4 +103,8 @@
   (is (= (parse-jsession-id {"Set-Cookie" ["JSESSIONID=12345A.portal2; Path=/; Secure"]}) "JSESSIONID=12345A.portal2"))
   )
 
+(deftest should-parse-list-of-card-ids
+  (is (= ["12345" "6789"] (get-list-of-card-ids select-card-form)))
+)
+
 (clojure.test/run-tests)
