@@ -38,6 +38,12 @@
     )
 )
 
+(deftest should-append-url-params
+  (let [hidden-input {:key "1234" :value "4567"} card-id "8978"]
+    (is (= (append-url-params "/first-part" hidden-input card-id) (str domain "/first-part?1234=4567&cardId=8978&method=input")))
+  )
+)
+
 (deftest should-return-original-logged-in-page-for-first-card-if-no-cards-to-select
   (let [original-logged-in-page "original"]
     (expect [parse-first-card-no (returns nil)]

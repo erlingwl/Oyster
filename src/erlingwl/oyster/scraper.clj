@@ -41,17 +41,20 @@
     )
   )
 
+(defn append-url-params [base-url hidden-key-pair card-id]
+   (str domain base-url "?" (:key hidden-key-pair) "=" (:value hidden-key-pair) "&cardId=" card-id "&method=input")
+  )
+
 (defn create-query-params [hidden-key-pair card-id]
-  (assoc {:cardId card-id :method "input"} (:key hidden-key-pair) (:value hidden-key-pair)) 
+  (assoc {:cardId card-id :method "input"} (:key hidden-key-pair) (:value hidden-key-pair))
   )
 
 (defn choose-card [card-id hidden-key-pair]
   (println card-id hidden-key-pair)
-  (let [query-params (create-query-params hidden-key-pair card-id)]
-    (println query-params)
-    (http/post (str domain "/oyster/selectCard.do")
+  (let [url (append-url-params "/oyster/selectCard.do" hidden-key-pair card-id)]
+    (println url)
+    (http/post url
       :parameter ({:Content-Type "application/x-www-form-urlencoded"} :parammap)
-      :query query-params
       :as :string
       :headers-as :map
     )
