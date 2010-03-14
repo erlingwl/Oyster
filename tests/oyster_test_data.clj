@@ -349,3 +349,14 @@
                 {:tag :td, :attrs nil, :content [""]}
                 {:tag :td, :attrs nil, :content ["24.00"]}
                 ]})
+
+(def select-card-form "<form action=\"/oyster/selectCard.do\" method=\"post\" id=\"selectCardForm\">
+                          <input type=\"text\" style=\"display: none;\" value=\"input\" name=\"method\"/>
+                          <label for=\"select_card_no\">Card no:</label>
+                          <select onchange=\"null\" onfocus=\"null\" id=\"select_card_no\" name=\"cardId\">
+                            <option value=\"\">Select card number</option>
+                            <option value=\"12345\">12345</option>
+                            <option value=\"6789\">6789</option></select>
+                          <input type=\"submit\" class=\"oysterbutton\" value=\"Go\"/>
+                          <input type=\"hidden\" value=\"9-5-1234E\" name=\"123456789\"/>
+                      </form>")

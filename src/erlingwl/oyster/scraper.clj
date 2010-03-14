@@ -24,18 +24,60 @@
 (defn- login-headers [] (:headers (login)))
 (defn- login-location [] (first (get (login-headers) "Location")))
 
-(defn- getpage [url] (http/get url :as :string))
+(defn getpage [url] (http/get url :as :string))
 
-(defn- journey-history-url [](str domain
-  (nth (re-find #"<li><a href=\"(.*)\">Journey history</a>" (:content (getpage (login-location)))) 1)
+(defn journey-history-url [logged-in-page]
+  (str domain
+  (nth (re-find #"<a href=\"(.*)\">Journey.*history</a>" logged-in-page) 1)
 ))
 
-(defn- printer-friendly-url [] (str domain
+(defn parse-first-card-no [logged-in-page]
+  (nth (re-find #"<option\s*value=\"(\d+)\"\s*>" logged-in-page) 1)
+  )
+
+(defn parse-hidden-input [logged-in-page]
+  (let [match (re-find #"<input type=\"hidden\" value=\"(.+)\" name=\"(.*)\"/>" logged-in-page)]
+    {:key (nth match 2) :value (nth match 1)}
+    )
+  )
+
+(defn- choose-card [card-id hidden-key-pair]
+  (println hidden-key-pair)
+  (http/post (str domain "/oyster/selectCard.do")
+    :parameter ({:Content-Type "application/x-www-form-urlencoded"} :parammap)
+    :query {:cardId card-id :method "input" (:key hidden-key-pair) (:value hidden-key-pair)}
+    :as :string
+    :headers-as :map
+  )
+)
+
+(defn logged-in-page-for-first-card [logged-in-page]
+  (let [card-no (parse-first-card-no logged-in-page) hidden-key-pair (parse-hidden-input logged-in-page)]
+    (if (not (nil? card-no)) (
+      (println "kjfsdlkfjsalkdfjlkjafskl")
+      (let [content (:content (choose-card card-no hidden-key-pair))]
+        content
+        ))
+      ((println "returning..")
+      logged-in-page)
+      )
+    )
+)
+
+(defn printer-friendly-url [] (
+  (str domain
+  (let [logged-in-page (logged-in-page-for-first-card (:content (getpage (login-location))))]
   (nth
     (re-find #"<p><a href=\"(.*)\".*target=\"_new\".*>Printer friendly version</a></p>"
-      (:content (getpage (journey-history-url)))
+      (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
+        (println (str "journey url: " go-to-journey-history-page-url))
+        (let [journey-history-page (:content (getpage go-to-journey-history-page-url))]
+        journey-history-page)
+        )
     )
   1)
+    )
+  )
 ))
 
 (defn printer-friendly-page [](:content (getpage (printer-friendly-url))))
