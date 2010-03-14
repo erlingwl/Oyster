@@ -42,7 +42,6 @@
   )
 
 (defn- choose-card [card-id hidden-key-pair]
-  (println hidden-key-pair)
   (http/post (str domain "/oyster/selectCard.do")
     :parameter ({:Content-Type "application/x-www-form-urlencoded"} :parammap)
     :query {:cardId card-id :method "input" (:key hidden-key-pair) (:value hidden-key-pair)}
@@ -54,11 +53,10 @@
 (defn logged-in-page-for-first-card [logged-in-page]
   (let [card-no (parse-first-card-no logged-in-page) hidden-key-pair (parse-hidden-input logged-in-page)]
     (if (not (nil? card-no)) (
-      (println "kjfsdlkfjsalkdfjlkjafskl")
       (let [content (:content (choose-card card-no hidden-key-pair))]
         content
         ))
-      ((println "returning..")
+      (
       logged-in-page)
       )
     )
@@ -70,7 +68,6 @@
   (nth
     (re-find #"<p><a href=\"(.*)\".*target=\"_new\".*>Printer friendly version</a></p>"
       (let [go-to-journey-history-page-url (journey-history-url logged-in-page)]
-        (println (str "journey url: " go-to-journey-history-page-url))
         (let [journey-history-page (:content (getpage go-to-journey-history-page-url))]
         journey-history-page)
         )
