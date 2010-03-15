@@ -98,18 +98,24 @@
   )
 )
 
+(defn- get-journey-history-page [login-headers-map jsessionid]
+  (let [go-to-journey-history-page-url (get-journey-history-url login-headers-map jsessionid)]
+     (let [journey-history-page (:content (get-page-for-jsessionid go-to-journey-history-page-url jsessionid))]
+          journey-history-page
+     )
+  )
+)
+
 (defn printer-friendly-url [login-headers-map]
-    (let [jsessionid (parse-jsession-id login-headers-map)]
-        (str domain
-                (let [go-to-journey-history-page-url (get-journey-history-url login-headers-map jsessionid)]
-                    (let [journey-history-page (:content (get-page-for-jsessionid go-to-journey-history-page-url jsessionid))]
-                        (let [parsed-printer-friendly-url (parse-printer-friendly-url journey-history-page)]
-                            parsed-printer-friendly-url
-                        )
-                    )
-                )
-        )
-    )
+  (let [jsessionid (parse-jsession-id login-headers-map)]
+      (str domain
+          (let [journey-history-page (get-journey-history-page login-headers-map jsessionid)]
+            (let [parsed-printer-friendly-url (parse-printer-friendly-url journey-history-page)]
+              parsed-printer-friendly-url
+            )
+          )
+      )
+  )
 )
 
 (defn printer-friendly-page []
